@@ -31,6 +31,10 @@ class Statistics {
         stat = new int[columnSize];
     }
 
+    /**
+     * Construct a string with the overall stats of the player.
+     * @return the overall statistics in a string.
+     */
     public String getOverallStats(){
         String playerStats = "";
         playerStats += "- Rounds Won: " + stat[0] + " ";

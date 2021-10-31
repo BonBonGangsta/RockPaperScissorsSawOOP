@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Extra Game is an extra feature I decided to add in order to spice the project up. This is shows that the program
+ * is module to a certain degree.
+ *
+ * I can implement this Rock, Paper, Scissors, Lizard, Spock game which is an actual Zero Sum Game.
+ */
 public class ExtraGame extends SimulatedGame{
     private static String rules = "Winner of the round will be determined as follows:\n" +
             "Scissors cuts Paper.\n" +

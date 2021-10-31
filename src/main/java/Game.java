@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 class Game extends SimulatedGame {
+    // Rules are given in the SRS
     private static final String rules = "Winner of the round will be determined as follows:\n" +
             "a. Rock breaks Scissors and Saw therefore Rock wins over Scissors and Saw. Rock loses against Paper.\n" +
             "b. Scissors cuts Paper therefore Scissors win over Paper. Scissors lose against Rock and Saw.\n" +
@@ -11,31 +12,49 @@ class Game extends SimulatedGame {
     private final int[][] outcome = {{0, -1, 1, 1}, {1, 0, -1, -1}, {-1, 1, 0, -1}, {-1, 1, 1, 0}};
     private GameStat gameStats; // holds the current stats for the rounds ONLY
     private ComputerPlayer Hal3000; // Instance of a computer Player.
-    private final int NUMOFCHOICES = 4;
+    private final int NUMOFCHOICES = outcome.length; // total number of choices available to the players.
+    private final int NUMOFROUNDS = 3; // Number of rounds that will consist a game.
 
+    // create a game with the number of players playing and a computer.
     Game(){
         Hal3000 = new ComputerPlayer();
         gameStats = new GameStat(3); // 2 human players and 1 computer.
     }
 
+    /**
+     * While the player wants to play, play a game of RPSS, this consists of 3 rounds.
+     * @param players ArrayList of human Players able to play
+     * @param input Scanner object that will be passed on by GameDriver.java
+     */
     @Override
     public void playGame(ArrayList<GamePlayer> players, Scanner input){
         boolean stopPlaying = false;
         while (!stopPlaying){
-            for (int rounds = 1; rounds <= 3; rounds++){
+            for (int rounds = 1; rounds <= NUMOFROUNDS; rounds++){
+                // get the players choices
                 int p1WoC = getPlayerWeaponOfChoice(players.get(0));
                 int p2WoC = getPlayerWeaponOfChoice(players.get(1));
+                // have the computer generate it's random choice
                 int compWoC = getPlayerWeaponOfChoice(Hal3000);
+                // calculate who wins between each player vs computer.
                 calculateWinnerOfRound(players.get(0), 0, p1WoC, compWoC);
                 calculateWinnerOfRound(players.get(1), 1, p2WoC, compWoC);
             }
+            // once three rounds are over, calculate who is the winner of the game, best out of 3.
             GameWinner(players);
+            // reset the game stats to 0
             gameStats.resetGameStats();
+            // ask human players if they would like to continue playing.
             stopPlaying = !continuePlaying(input);
         }
     }
 
 
+    /**
+     * Based on the total rounds won by each player from Game's statistics. the Game winner is calculated, the players'
+     * statistics is updated and the winner is announced.
+     * @param players Arraylist of players active in the Game.
+     */
     private void GameWinner(ArrayList<GamePlayer> players) {
         // if the sum of all the player's wins from the current game is greater than the computer's wins
         // one of the players is the winner.
@@ -96,6 +115,16 @@ class Game extends SimulatedGame {
 
     }
 
+    /**
+     * The winner fo the round between a human player and computer is based on the index for which their
+     * weapons corresponds to and it's outcome. Increase the human player's statistics and announce the winner of
+     * the round between human and computer.
+     * @param player human player
+     * @param playerRow index for which the player corresponds to in the Game's Statistics, 0 = player 1, 1= player 2
+     *                  3 = computer.
+     * @param playerChoice human's choice of weapon.
+     * @param computerChoice computer's randomly generated choice of weapon.
+     */
     public void calculateWinnerOfRound(GamePlayer player, int playerRow, int playerChoice, int computerChoice){
         if(getWinner(playerChoice, computerChoice) == 0){
             System.out.println(player.getName() + " has chosen " + getWeaponFromChoice(playerChoice) +
@@ -120,6 +149,11 @@ class Game extends SimulatedGame {
         }
     }
 
+    /**
+     * return the String definition of the weapon based on the number given.
+     * @param choice int which matches the menu options.
+     * @return name of the weapon based on the menu option.
+     */
     private String getWeaponFromChoice(int choice) {
         if (choice == 1) return "Rock";
         else if (choice == 2) return "Paper";
@@ -157,6 +191,11 @@ class Game extends SimulatedGame {
 
     }
 
+    /**
+     * ask the player if they would like to continue playing.
+     * @param input String of either Y/N will be accepted.
+     * @return true if the player wants to continue otherwise, false.
+     */
     public boolean continuePlaying(Scanner input){
         System.out.println("Would you like to keep playing? 'Y' for Yes , 'N' for No");
         boolean response = false;
@@ -174,6 +213,10 @@ class Game extends SimulatedGame {
         }
         return response;
     }
+
+    /**
+     * print out the rules.
+     */
     @Override
     void getRules(){
         System.out.println(rules);
