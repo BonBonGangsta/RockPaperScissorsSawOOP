@@ -26,6 +26,8 @@ public class ExtraGame extends SimulatedGame{
                                      {1, -1, 1, -1, 0}}; // Spock index 4
     private GameStat gameStats; // holds the current stats for the rounds ONLY
     private ComputerPlayer Hal3000; // Instance of a computer Player.
+    private final int NUMOFCHOICES = outcome.length; // total number of choices available to the players.
+    private final int NUMOFROUNDS = 3;
 
     ExtraGame(){
         Hal3000 = new ComputerPlayer();
@@ -36,7 +38,7 @@ public class ExtraGame extends SimulatedGame{
     public void playGame(ArrayList<GamePlayer> players, Scanner input){
         boolean stopPlaying = false;
         while (!stopPlaying){
-            for (int rounds = 1; rounds <= 3; rounds++){
+            for (int rounds = 1; rounds <= NUMOFROUNDS; rounds++){
                 int p1WoC = getPlayerWeaponOfChoice(players.get(0));
                 int p2WoC = getPlayerWeaponOfChoice(players.get(1));
                 int compWoC = getPlayerWeaponOfChoice(Hal3000);
@@ -115,7 +117,6 @@ public class ExtraGame extends SimulatedGame{
             System.out.println(player.getName() + " has chosen " + getWeaponFromChoice(playerChoice) +
                     " and Computer has choosen " + getWeaponFromChoice(computerChoice) + " winner: Tie!");
             player.getStat().updateStat(2); // increase the player's tie stat for ROUNDS
-            computer.getStat().updateStat(2); // increase the player's tie stat for ROUNDS
             gameStats.increateGameStat(playerRow,2); // increase the current game's stat for ties for player
             gameStats.increateGameStat(2,2); // increase the current game's stat for ties for computer
         }
@@ -123,7 +124,6 @@ public class ExtraGame extends SimulatedGame{
             System.out.println(player.getName() + " has chosen " + getWeaponFromChoice(playerChoice) +
                     " and Computer has choosen " + getWeaponFromChoice(computerChoice) + " winner: " + player.getName());
             player.getStat().updateStat(0); // increase the player's win stat for ROUNDS
-            computer.getStat().updateStat(1); // increase the computer's loss stat for ROUNDS
             gameStats.increateGameStat(playerRow,0); // increase the current game's stat for wins for player
             gameStats.increateGameStat(2,1);// increase the current game's stat for loss of computer
         }
@@ -131,7 +131,6 @@ public class ExtraGame extends SimulatedGame{
             System.out.println(player.getName() + " has chosen " + getWeaponFromChoice(playerChoice) +
                     " and Computer has choosen " + getWeaponFromChoice(computerChoice) + " winner: Computer!");
             player.getStat().updateStat(1); // increase the player's win stat for ROUNDS
-            computer.getStat().updateStat(0); // increase the computer's loss stat for ROUNDS
             gameStats.increateGameStat(playerRow,1); // increase the current game's stat for wins for player
             gameStats.increateGameStat(2,0);// increase the current game's stat for loss of computer
         }
@@ -157,26 +156,40 @@ public class ExtraGame extends SimulatedGame{
     }
 
     public int getPlayerWeaponOfChoice(GamePlayer player){
-        while (true){
-            System.out.println(player.getName() + ", what weapon will you choose? '1' Rock, '2' Paper, '3' Scissors" +
-                    " '4' lizard, '5' Spock.");
-            int ultimateChoice = player.playGame(5);
-            if (ultimateChoice >= 1 && ultimateChoice <= 5){
-                return ultimateChoice;
-            }
-            else{
-                System.out.println("ERROR: please enter a number corresponding to the weapon selection");
+        if (player instanceof Player) {
+            while (true) {
+                System.out.println(player.getName() + ", what weapon will you choose? '1' Rock, '2' Paper, '3' Scissors" +
+                        " '4' Saw.");
+                int ultimateChoice = player.playGame(NUMOFCHOICES);
+                if (ultimateChoice >= 1 && ultimateChoice <= NUMOFCHOICES) {
+                    return ultimateChoice;
+                } else {
+                    System.out.println("ERROR: please enter a number corresponding to the weapon selection");
+                }
             }
         }
+        else {
+            return player.playGame(NUMOFCHOICES);
+        }
+
     }
 
     public boolean continuePlaying(Scanner input){
-        System.out.println("Would you like to keep playting? 'Y' for Yes , 'N' for no");
-        String answer = input.nextLine();
-        while (!(answer.equalsIgnoreCase("y") || answer.equalsIgnoreCase("n"))){
-            return answer.equalsIgnoreCase("y");
+        System.out.println("Would you like to keep playing? 'Y' for Yes , 'N' for No");
+        boolean response = false;
+        try{
+            String answer = input.next();
+            if (answer.equalsIgnoreCase("y")){
+                response = true;
+            }
+            else if (answer.equalsIgnoreCase("n")){
+                response = false;
+            }
         }
-        return false;
+        catch (Exception e){
+            System.out.println("ERROR: please enter 'Y' for Yes, 'N' for No.");
+        }
+        return response;
     }
     @Override
     void getRules(){
